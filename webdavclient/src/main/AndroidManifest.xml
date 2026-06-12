@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.leohao.android.alistlite.webdav">
+
+    <application>
+        <activity
+            android:name=".FileBrowserActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WebDAVClient" />
+        <activity
+            android:name=".VideoPlayerActivity"
+            android:exported="false"
+            android:theme="@style/Theme.WebDAVClient"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" />
+    </application>
+
+</manifest>

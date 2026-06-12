@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.WebDAVClient" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">#2196F3</item>
+        <item name="colorPrimaryDark">#1976D2</item>
+        <item name="colorAccent">#FF4081</item>
+    </style>
+
+    <color name="webdav_primary">#2196F3</color>
+    <color name="webdav_primary_dark">#1976D2</color>
+    <color name="webdav_accent">#FF4081</color>
+    <color name="webdav_background">#F5F5F5</color>
+    <color name="webdav_surface">#FFFFFF</color>
+    <color name="webdav_text_primary">#212121</color>
+    <color name="webdav_text_secondary">#757575</color>
+    <color name="webdav_divider">#E0E0E0</color>
+    <color name="webdav_directory">#FF9800</color>
+    <color name="webdav_video">#E91E63</color>
+    <color name="webdav_image">#4CAF50</color>
+    <color name="webdav_audio">#9C27B0</color>
+    <color name="webdav_other">#607D8B</color>
+
+    <string name="app_name">WebDAV 文件浏览</string>
+</resources>

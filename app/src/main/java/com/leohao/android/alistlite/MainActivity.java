@@ -496,6 +496,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * 打开 WebDAV 文件浏览器
+     */
+    public void openFileBrowser(View view) {
+        Intent intent = new Intent(MainActivity.this, com.leohao.android.alistlite.webdav.FileBrowserActivity.class);
+        startActivity(intent);
+    }
+
+    /**
      * 设定管理员密码
      */
     public void setAdminPassword(View view) {
