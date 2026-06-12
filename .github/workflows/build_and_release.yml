@@ -31,6 +31,9 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
+      - name: SetupAndroidSDK
+        uses: android-actions/setup-android@v3
+
       - name: 4-GetLatestTag
         id: get_latest_tag
         run: |
