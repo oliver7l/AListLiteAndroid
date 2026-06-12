@@ -339,39 +339,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-            }
-
-            @android.annotation.TargetApi(android.os.Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-                String url = request.getUrl().toString();
-                // 拦截 AList 前端主页 HTML，修复旧版 WebView 不兼容问题
-                if (url.endsWith("/") || url.endsWith("/#/") || url.equals(serverAddress)) {
-                    try {
-                        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
-                        conn.setConnectTimeout(5000);
-                        conn.setReadTimeout(5000);
-                        String html = new String(readAllBytes(conn.getInputStream()), StandardCharsets.UTF_8);
-                        // 修复：替换掉 import.meta.resolve 检测（WebView 101 不支持）
-                        html = html.replaceAll(
-                            "<script type=\"module\">import'.*?__vite_is_modern_browser=true</script>",
-                            "<script type=\"module\">window.__vite_is_modern_browser=true</script>"
-                        );
-                        return new WebResourceResponse("text/html", "UTF-8",
-                            new java.io.ByteArrayInputStream(html.getBytes(StandardCharsets.UTF_8)));
-                    } catch (Exception ignored) {}
+                // 修复旧版 WebView 不兼容：AList 前端 Vite 检测 import.meta.resolve 会失败
+                // 在页面加载完成后注入 window.__vite_is_modern_browser=true 绕过检测
+                if (url.contains("5244") || url.contains(serverAddress.replace("http://", "").replace("https://", ""))) {
+                    view.evaluateJavascript(
+                        "window.__vite_is_modern_browser=true;",
+                        null
+                    );
                 }
-                return super.shouldInterceptRequest(view, request);
-            }
-
-            private byte[] readAllBytes(java.io.InputStream is) throws java.io.IOException {
-                java.io.ByteArrayOutputStream buffer = new java.io.ByteArrayOutputStream();
-                byte[] data = new byte[4096];
-                int n;
-                while ((n = is.read(data, 0, data.length)) != -1) {
-                    buffer.write(data, 0, n);
-                }
-                return buffer.toByteArray();
             }
 
             @Override
