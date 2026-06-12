@@ -46,6 +46,7 @@ import com.leohao.android.alistlite.service.AlistTileService;
 import com.leohao.android.alistlite.util.AppUtil;
 import com.leohao.android.alistlite.util.ClipBoardHelper;
 import com.leohao.android.alistlite.util.Constants;
+import com.leohao.android.alistlite.util.SharedDataHelper;
 import com.leohao.android.alistlite.util.MyHttpUtil;
 import com.leohao.android.alistlite.window.PopupMenuWindow;
 import com.yuyh.jsonviewer.library.JsonRecyclerView;
@@ -500,6 +501,14 @@ public class MainActivity extends AppCompatActivity {
      */
     public void openFileBrowser(View view) {
         Intent intent = new Intent(MainActivity.this, com.leohao.android.alistlite.webdav.FileBrowserActivity.class);
+        // 自动传入 WebDAV 连接信息
+        String username = SharedDataHelper.getInstance().getStringShareData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_USERNAME);
+        String password = SharedDataHelper.getInstance().getStringShareData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_PASSWORD);
+        if (username == null) username = "admin";
+        if (password == null) password = "";
+        intent.putExtra("webdav_url", "http://127.0.0.1:5244/dav");
+        intent.putExtra("webdav_username", username);
+        intent.putExtra("webdav_password", password);
         startActivity(intent);
     }
 
@@ -521,6 +530,11 @@ public class MainActivity extends AppCompatActivity {
                 String pwd = editText.getText().toString().trim();
                 if (!"".equals(pwd)) {
                     alistServer.setAdminPassword(pwd);
+                    //保存WebDAV密码到本地存储
+                    SharedDataHelper.getInstance().putSharedData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_PASSWORD, pwd);
+                    try {
+                        SharedDataHelper.getInstance().putSharedData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_USERNAME, alistServer.getAdminUser());
+                    } catch (Exception ignored) {}
                     String adminUsername = alistServer.getAdminUser();
                     showToast(String.format("管理员密码已更新：%s | %s", adminUsername, pwd), Toast.LENGTH_LONG);
                 } else {

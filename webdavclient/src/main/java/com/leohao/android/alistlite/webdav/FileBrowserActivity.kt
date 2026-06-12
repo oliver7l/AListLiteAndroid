@@ -1,6 +1,5 @@
 package com.leohao.android.alistlite.webdav
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -8,7 +7,6 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -35,20 +33,29 @@ class FileBrowserActivity : AppCompatActivity() {
     private var isConnected = false
     private var isLoading = false
 
-    private val mainHandler = Handler(Looper.getMainLooper())
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
 
-    private val dateFormat by lazy {
-        SimpleDateFormat("yyyy/MM/dd HH:mm", Locale.getDefault())
-    }
+    // WebDAV 连接参数（从 Intent 传入）
+    private var serverUrl = "http://127.0.0.1:5244/dav"
+    private var username = "admin"
+    private var password = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_file_browser)
 
+        // 读取 Intent 传入的连接参数
+        serverUrl = intent.getStringExtra("webdav_url") ?: serverUrl
+        username = intent.getStringExtra("webdav_username") ?: username
+        password = intent.getStringExtra("webdav_password") ?: password
+
         initViews()
         setupToolbar()
-        showConnectDialog()
+
+        // 启动后自动连接
+        Handler(Looper.getMainLooper()).postDelayed({
+            autoConnect()
+        }, 300)
     }
 
     private fun initViews() {
@@ -73,10 +80,6 @@ class FileBrowserActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
 
         swipeRefresh.setOnRefreshListener { refreshCurrentPath() }
-
-        findViewById<View>(R.id.btn_connect).setOnClickListener { showConnectDialog() }
-
-        layoutEmpty.setOnClickListener { showConnectDialog() }
     }
 
     private fun setupToolbar() {
@@ -90,44 +93,17 @@ class FileBrowserActivity : AppCompatActivity() {
         }
     }
 
-    private fun showConnectDialog() {
+    private fun autoConnect() {
+        showLoading(true)
+        tvEmptyHint.text = "正在连接 WebDAV 服务器..."
+
         val config = ServerConfig(
             name = "AList 本地服务",
-            url = "http://127.0.0.1:5244/dav",
-            username = "",
-            password = ""
+            url = serverUrl,
+            username = username,
+            password = password
         )
 
-        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_connect, null)
-        val etUrl = dialogView.findViewById<EditText>(R.id.et_url)
-        val etUsername = dialogView.findViewById<EditText>(R.id.et_username)
-        val etPassword = dialogView.findViewById<EditText>(R.id.et_password)
-
-        etUrl.setText(config.url)
-
-        AlertDialog.Builder(this)
-            .setTitle("连接 WebDAV 服务器")
-            .setView(dialogView)
-            .setPositiveButton("连接") { _, _ ->
-                val url = etUrl.text.toString().trim()
-                if (url.isBlank()) {
-                    Toast.makeText(this, "请输入服务器地址", Toast.LENGTH_SHORT).show()
-                    return@setPositiveButton
-                }
-                val newConfig = ServerConfig(
-                    name = "WebDAV",
-                    url = url,
-                    username = etUsername.text.toString().trim(),
-                    password = etPassword.text.toString().trim()
-                )
-                connectToServer(newConfig)
-            }
-            .setNegativeButton("取消", null)
-            .show()
-    }
-
-    private fun connectToServer(config: ServerConfig) {
-        showLoading(true)
         scope.launch {
             val result = withContext(Dispatchers.IO) {
                 try {
@@ -137,6 +113,7 @@ class FileBrowserActivity : AppCompatActivity() {
                 }
             }
             showLoading(false)
+
             if (result) {
                 isConnected = true
                 currentPath = "/"
@@ -146,9 +123,9 @@ class FileBrowserActivity : AppCompatActivity() {
                 loadFiles("/")
             } else {
                 isConnected = false
-                tvEmptyHint.text = "连接失败，点击重试"
+                tvEmptyHint.text = "连接失败，下拉刷新重试"
                 layoutEmpty.visibility = View.VISIBLE
-                Snackbar.make(recyclerView, "连接失败，请检查地址", Snackbar.LENGTH_LONG).show()
+                Snackbar.make(recyclerView, "无法连接 WebDAV，请确认 AList 服务已启动", Snackbar.LENGTH_LONG).show()
             }
         }
     }
@@ -164,14 +141,10 @@ class FileBrowserActivity : AppCompatActivity() {
                 try {
                     webdavClient.listFiles(path)
                 } catch (e: WebDAVException.AuthenticationFailed) {
-                    mainHandler.post {
-                        Snackbar.make(recyclerView, "认证失败，请检查用户名密码", Snackbar.LENGTH_LONG).show()
-                    }
+                    mainHandlerPost { Snackbar.make(recyclerView, "认证失败，请在 AList 中设置管理员密码", Snackbar.LENGTH_LONG).show() }
                     null
                 } catch (e: Exception) {
-                    mainHandler.post {
-                        Snackbar.make(recyclerView, "加载失败: ${e.message}", Snackbar.LENGTH_LONG).show()
-                    }
+                    mainHandlerPost { Snackbar.make(recyclerView, "加载失败: ${e.message}", Snackbar.LENGTH_LONG).show() }
                     null
                 }
             }
@@ -228,6 +201,10 @@ class FileBrowserActivity : AppCompatActivity() {
         } else if (loading) {
             layoutEmpty.visibility = View.GONE
         }
+    }
+
+    private fun mainHandlerPost(action: () -> Unit) {
+        Handler(Looper.getMainLooper()).post(action)
     }
 
     override fun onDestroy() {

@@ -30,24 +30,13 @@
 
         <TextView
             android:id="@+id/tv_path"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:text="/"
             android:textColor="@color/webdav_text_primary"
             android:textSize="14sp"
             android:maxLines="1"
             android:ellipsize="middle" />
-
-        <ImageButton
-            android:id="@+id/btn_connect"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/ic_webdav_connect"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="连接设置"
-            android:scaleType="centerInside"
-            android:padding="8dp" />
     </LinearLayout>
 
     <!-- 文件列表 -->
