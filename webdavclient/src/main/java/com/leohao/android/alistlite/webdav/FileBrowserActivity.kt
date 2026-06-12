@@ -189,6 +189,8 @@ class FileBrowserActivity : AppCompatActivity() {
         val intent = Intent(this, VideoPlayerActivity::class.java).apply {
             putExtra("video_url", streamUrl)
             putExtra("video_title", resource.name)
+            putExtra("username", username)
+            putExtra("password", password)
         }
         startActivity(intent)
     }
