@@ -30,8 +30,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
-          android-sdk-build-tools-version: '30.0.2'
-          android-sdk-platforms: 'android-34'
 
       - name: 4-GetLatestTag
         id: get_latest_tag
