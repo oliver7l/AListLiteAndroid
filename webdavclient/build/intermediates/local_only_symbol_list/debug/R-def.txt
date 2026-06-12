@@ -1,0 +1,34 @@
+R_DEF: Internal format may change without notice
+local
+color webdav_accent
+color webdav_audio
+color webdav_background
+color webdav_directory
+color webdav_divider
+color webdav_image
+color webdav_other
+color webdav_primary
+color webdav_primary_dark
+color webdav_surface
+color webdav_text_primary
+color webdav_text_secondary
+color webdav_video
+id item_root
+id iv_icon
+id layout_empty
+id layout_path
+id player_view
+id progress_bar
+id recycler_files
+id swipe_refresh
+id toolbar
+id tv_empty_hint
+id tv_info
+id tv_name
+id tv_path
+id tv_size
+layout activity_file_browser
+layout activity_video_player
+layout item_file
+string app_name
+style Theme.WebDAVClient
