@@ -11,6 +11,7 @@ data class WebDAVResource(
 ) {
     val isVideo: Boolean get() = resourceType == ResourceType.VIDEO
     val isImage: Boolean get() = resourceType == ResourceType.IMAGE
+    val isAudio: Boolean get() = resourceType == ResourceType.AUDIO
 
     companion object {
         fun determineResourceType(name: String, contentType: String?, isDirectory: Boolean): ResourceType {
