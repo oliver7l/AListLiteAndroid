@@ -22,7 +22,7 @@ import com.leohao.android.alistlite.broadcast.CopyReceiver;
 import com.leohao.android.alistlite.model.Alist;
 import com.leohao.android.alistlite.util.AppUtil;
 import com.leohao.android.alistlite.util.Constants;
-
+import com.leohao.android.alistlite.util.SharedDataHelper;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -91,6 +91,16 @@ public class AlistService extends Service {
                         //管理员用户名
                         String adminUsername = alistServer.getAdminUser();
                         showToast(String.format("初始登录信息：%s | %s", adminUsername, Constants.ALIST_DEFAULT_PASSWORD), Toast.LENGTH_LONG);
+                    }
+                    // 保存 WebDAV 凭据到本地存储（密码在首次初始化或用户修改时保存）
+                    try {
+                        String adminUser = alistServer.getAdminUser();
+                        SharedDataHelper.getInstance().putSharedData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_USERNAME, adminUser);
+                    } catch (Exception ignored) {}
+                    // 如果尚未保存密码，则用默认密码
+                    String savedPwd = SharedDataHelper.getInstance().getStringShareData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_PASSWORD);
+                    if (savedPwd == null) {
+                        SharedDataHelper.getInstance().putSharedData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_PASSWORD, Constants.ALIST_DEFAULT_PASSWORD);
                     }
                 }
                 //AList服务前端访问地址
