@@ -106,36 +106,3 @@ jobs:
         with:
           name: AListLite-Debug-APK
           path: app/build/outputs/apk/debug/*.apk
-
-      - name: Sign-Release
-        if: ${{ secrets.ANDROID_SIGNING_KEY != '' }}
-        uses: ilharp/sign-android-release@v2
-        with:
-          releaseDir: app/build/outputs/apk/release
-          signingKey: ${{ secrets.ANDROID_SIGNING_KEY }}
-          keyAlias: ${{ secrets.ANDROID_KEY_ALIAS }}
-          keyStorePassword: ${{ secrets.ANDROID_KEY_STORE_PASSWORD }}
-          keyPassword: ${{ secrets.ANDROID_KEY_PASSWORD }}
-
-      - name: 12-CreateNewTag
-        run: |
-          git config --global user.email "2867555086@github.com"
-          git config --global user.name "LeoHaoVIP"
-          # 检查标签是否存在，不存在则创建并推送
-          if ! git ls-remote --tags origin | grep -q "refs/tags/${{ env.NEW_TAG }}"; then
-            git tag ${{ env.NEW_TAG }}
-            git push origin ${{ env.NEW_TAG }}
-          fi
-
-      - name: 13-CreateNewRelease
-        if: ${{ secrets.ANDROID_SIGNING_KEY != '' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: false
-          tag_name: ${{ env.NEW_TAG }}
-          name: From OpenList v${{ env.LATEST_OPENLIST_VERSION }}
-          body: |
-            🚀 【自动构建】同步 OpenList v${{ env.LATEST_OPENLIST_VERSION }}
-          files: |
-            app/build/outputs/apk/release/*${{ env.NEW_TAG }}-*-release-signed.apk
-            app/build/outputs/apk/debug/*.apk
