@@ -161,7 +161,9 @@ class WebDAVClient {
 
             while (parser.eventType != XmlPullParser.END_DOCUMENT) {
                 if (parser.eventType == XmlPullParser.START_TAG) {
-                    val tagName = parser.name.lowercase()
+                    // 去掉命名空间前缀 (如 D:href → href)
+                    val rawName = parser.name.lowercase()
+                    val tagName = rawName.substringAfter(':')
                     when (tagName) {
                         "href" -> {
                             currentPath = parser.nextText().trim()
@@ -187,23 +189,25 @@ class WebDAVClient {
                             currentContentType = parser.nextText().trim().ifEmpty { null }
                         }
                         "resourcetype" -> {
-                            // 检查子标签是否包含 collection
-                            val innerParser = factory.newPullParser()
-                            innerParser.setInput(StringReader("<d>${
-                                parser.nextText()
-                            }</d>"))
-                            while (innerParser.eventType != XmlPullParser.END_DOCUMENT) {
-                                if (innerParser.eventType == XmlPullParser.START_TAG &&
-                                    innerParser.name.lowercase() == "collection"
-                                ) {
-                                    currentIsDirectory = true
+                            // 检查子标签是否包含 collection（用深度遍历）
+                            var depth = 1
+                            currentIsDirectory = false
+                            while (depth > 0) {
+                                val evt = parser.next()
+                                when (evt) {
+                                    XmlPullParser.START_TAG -> {
+                                        depth++
+                                        val childName = parser.name.lowercase().substringAfter(':')
+                                        if (childName == "collection") currentIsDirectory = true
+                                    }
+                                    XmlPullParser.END_TAG -> depth--
                                 }
-                                innerParser.next()
                             }
                         }
                     }
                 } else if (parser.eventType == XmlPullParser.END_TAG) {
-                    val tagName = parser.name.lowercase()
+                    val rawName = parser.name.lowercase()
+                    val tagName = rawName.substringAfter(':')
                     if (tagName == "response") {
                         // 解析完成一个资源
                         if (currentPath.isNotEmpty()) {
