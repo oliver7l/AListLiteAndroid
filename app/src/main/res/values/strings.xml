@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AListLite</string>
+    <string name="app_name">AListLite+</string>
     <string name="tooltip_refresh">刷新当前页面</string>
     <string name="tooltip_homepage">返回主页</string>
     <string name="tooltip_go_back">后退</string>
