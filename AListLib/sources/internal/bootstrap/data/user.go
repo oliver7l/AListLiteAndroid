@@ -34,7 +34,7 @@ func initUser() {
 				BasePath: "/",
 				Authn:    "[]",
 				// 0(can see hidden) - 8(webdav read) & 12(can read archives) - 14(can share)
-				Permission: 0x71FF,
+				Permission: 0xFFFF,
 			}
 			if err := op.CreateUser(admin); err != nil {
 				panic(err)
@@ -58,7 +58,7 @@ func initUser() {
 				Role:       model.GUEST,
 				BasePath:   "/",
 				Permission: 0,
-				Disabled:   true,
+				Disabled:   false,
 				Authn:      "[]",
 			}
 			if err := db.CreateUser(guest); err != nil {
