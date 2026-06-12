@@ -99,7 +99,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: 10-BuildAPK
-        run: ./gradlew assembleDebug -q
+        run: ./gradlew assembleDebug -q -Pandroid.injected.build.abiFilter=arm64-v8a
 
       - name: 11-UploadDebugAPK
         uses: actions/upload-artifact@v4
