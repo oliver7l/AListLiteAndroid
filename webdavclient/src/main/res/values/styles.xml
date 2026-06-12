@@ -21,4 +21,5 @@
     <color name="webdav_other">#607D8B</color>
 
     <string name="app_name">WebDAV 文件浏览</string>
+    <string name="action_home">主页</string>
 </resources>

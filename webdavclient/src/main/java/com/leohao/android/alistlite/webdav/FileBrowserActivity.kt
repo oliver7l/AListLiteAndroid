@@ -87,6 +87,19 @@ class FileBrowserActivity : AppCompatActivity() {
         toolbar.setNavigationOnClickListener {
             handleBack()
         }
+        // 设置菜单
+        toolbar.inflateMenu(R.menu.file_browser_menu)
+        toolbar.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.action_home -> {
+                    navigateToRoot()
+                    true
+                }
+                else -> false
+            }
+        }
+        // 初始标题
+        toolbar.title = "/"
     }
 
     private fun handleBack() {
@@ -151,6 +164,9 @@ class FileBrowserActivity : AppCompatActivity() {
         showLoading(true)
         currentPath = path
         tvPath.text = path.ifEmpty { "/" }
+        // 工具栏标题显示当前路径
+        findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar).title =
+            if (path == "/") "/" else path.substringAfterLast("/").ifEmpty { "/" }
 
         scope.launch {
             val files = withContext(Dispatchers.IO) {
@@ -192,6 +208,11 @@ class FileBrowserActivity : AppCompatActivity() {
 
     private fun refreshCurrentPath() {
         loadFiles(currentPath)
+    }
+
+    private fun navigateToRoot() {
+        navigationStack.clear()
+        loadFiles("/")
     }
 
     private fun playVideo(resource: WebDAVResource) {
