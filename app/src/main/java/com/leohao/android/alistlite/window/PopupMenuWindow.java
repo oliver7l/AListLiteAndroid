@@ -65,10 +65,5 @@ public class PopupMenuWindow extends PopupWindow {
             dismiss();
             MainActivity.getInstance().showSystemInfo(view);
         });
-        //文件浏览（WebDAV）
-        popupView.findViewById(R.id.btn_openFileBrowser).setOnClickListener((view) -> {
-            dismiss();
-            MainActivity.getInstance().openFileBrowser(view);
-        });
     }
 }

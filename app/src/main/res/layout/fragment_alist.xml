@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- 顶栏：服务开关 + 工具栏按钮 -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusable="false">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_app_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/app_name_ext"
+                android:textSize="19sp"
+                android:tooltipText="@string/tooltip_homepage" />
+
+            <ImageButton
+                android:id="@+id/btn_refresh"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="13dp"
+                android:background="@null"
+                android:focusable="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/refresh"
+                android:tooltipText="@string/tooltip_refresh" />
+
+            <ImageButton
+                android:id="@+id/btn_webViewGoBack"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="13dp"
+                android:layout_toRightOf="@id/btn_refresh"
+                android:background="@null"
+                android:elevation="16dp"
+                android:focusable="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/go_back"
+                android:tooltipText="@string/tooltip_go_back" />
+
+            <ImageButton
+                android:id="@+id/btn_webViewGoForward"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/btn_webViewGoBack"
+                android:background="@null"
+                android:focusable="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/go_forward"
+                android:tooltipText="@string/tooltip_go_forward" />
+
+            <ImageButton
+                android:id="@+id/btn_showPopupMenu"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/switchButton"
+                android:background="@null"
+                android:focusable="true"
+                android:gravity="end"
+                android:scaleType="centerInside"
+                android:src="@drawable/more"
+                android:tooltipText="@string/tooltip_more" />
+
+            <com.kyleduo.switchbutton.SwitchButton
+                android:id="@+id/switchButton"
+                style="@style/SwitchButtonStyle"
+                android:layout_width="70dp"
+                android:layout_height="35dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:checked="false"
+                app:kswAnimationDuration="300"
+                app:kswBackDrawable="@drawable/ios_back_drawable"
+                app:kswThumbDrawable="@drawable/ios_thumb_selector"
+                app:kswThumbMarginBottom="0dp"
+                app:kswThumbMarginLeft="2dp"
+                app:kswThumbMarginTop="3dp" />
+        </RelativeLayout>
+    </androidx.appcompat.widget.Toolbar>
+
+    <!-- AList 服务状态 -->
+    <TextView
+        android:id="@+id/tv_alist_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:clickable="true"
+        android:gravity="left"
+        android:text="@string/alist_service_not_running"
+        android:textSize="15sp" />
+
+    <!-- WebView -->
+    <WebView
+        android:id="@+id/webview_alist"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/gray"
+        android:layout_marginTop="5dp" />
+
+    <!-- 视频全屏容器 -->
+    <FrameLayout
+        android:id="@+id/video_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -106,13 +106,9 @@ public class AlistService extends Service {
                 //AList服务前端访问地址
                 String serverAddress = getAlistServerAddress();
                 if (MainActivity.getInstance() != null) {
-                    //状态开关恢复到开启状态（不触发监听事件）
-                    MainActivity.getInstance().serviceSwitch.setCheckedNoEvent(true);
                     //加载AList前端页面
                     MainActivity.getInstance().serverAddress = serverAddress;
-                    MainActivity.getInstance().webView.loadUrl(serverAddress);
-                    //隐藏服务未开启提示
-                    MainActivity.getInstance().runningInfoTextView.setVisibility(View.GONE);
+                    MainActivity.getInstance().onServiceStarted(serverAddress);
                 }
                 //创建 Intent，用于复制服务器地址到剪贴板
                 Intent copyIntent = new Intent(this, CopyReceiver.class);
@@ -145,8 +141,7 @@ public class AlistService extends Service {
             } catch (Exception e) {
                 Log.e(TAG, e.getLocalizedMessage());
                 if (MainActivity.getInstance() != null) {
-                    //状态开关恢复到关闭状态（不触发监听事件）
-                    MainActivity.getInstance().serviceSwitch.setCheckedNoEvent(false);
+                    MainActivity.getInstance().onServiceStopped();
                 }
                 showToast(String.format("AList 服务开启失败: %s", e.getLocalizedMessage()));
             }
@@ -185,12 +180,7 @@ public class AlistService extends Service {
         //关闭服务
         alistServer.shutdown();
         if (MainActivity.getInstance() != null) {
-            //状态开关恢复到关闭状态（不触发监听事件）
-            MainActivity.getInstance().serviceSwitch.setCheckedNoEvent(false);
-            //刷新 webview
-            MainActivity.getInstance().webView.reload();
-            //显示服务未开启提示
-            MainActivity.getInstance().runningInfoTextView.setVisibility(View.VISIBLE);
+            MainActivity.getInstance().onServiceStopped();
         }
         if (wakeLock != null) {
             wakeLock.release();
