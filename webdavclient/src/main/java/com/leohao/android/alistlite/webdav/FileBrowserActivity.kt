@@ -85,12 +85,28 @@ class FileBrowserActivity : AppCompatActivity() {
     private fun setupToolbar() {
         val toolbar = findViewById<com.google.android.material.appbar.MaterialToolbar>(R.id.toolbar)
         toolbar.setNavigationOnClickListener {
-            if (navigationStack.isNotEmpty()) {
-                navigateBack()
-            } else {
-                finish()
-            }
+            handleBack()
         }
+    }
+
+    private fun handleBack() {
+        if (navigationStack.isNotEmpty()) {
+            navigateBack()
+        } else {
+            finish()
+        }
+    }
+
+    override fun onBackPressed() {
+        handleBack()
+    }
+
+    override fun onOptionsItemSelected(item: android.view.MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            handleBack()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun autoConnect() {
