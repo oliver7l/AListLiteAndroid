@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Toast;
+import android.service.quicksettings.TileService;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         fileBrowserFragment = new FileBrowserFragment();
 
         bottomNavigation = findViewById(R.id.bottom_navigation);
-        bottomNavigation.setOnItemSelectedListener(this::onNavItemSelected);
+        bottomNavigation.setOnNavigationItemSelectedListener(this::onNavItemSelected);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

@@ -246,11 +246,6 @@ public class AListFragment extends Fragment {
             }
 
             @Override
-            public void onPageCommittedVisible(String url) {
-                super.onPageCommittedVisible(url);
-            }
-
-            @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
             }
@@ -392,13 +387,17 @@ public class AListFragment extends Fragment {
         layout.addView(pwdInput);
 
         builder.setView(layout);
+        builder.setView(layout);
         builder.setPositiveButton("确定", (dialog, which) -> {
             String pwd = pwdInput.getText().toString().trim();
             if (!TextUtils.isEmpty(pwd)) {
                 try {
                     String username = usernameInput.getText().toString().trim();
                     if (!TextUtils.isEmpty(username)) {
-                        alistServer.setAdminUser(username);
+                        // 用户名通过 Alist API 设置
+                        try {
+                            SharedDataHelper.getInstance().putSharedData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_USERNAME, username);
+                        } catch (Exception ignored) {}
                     }
                     alistServer.setAdminPassword(pwd);
                     SharedDataHelper.getInstance().putSharedData(Constants.ANDROID_SHARED_DATA_KEY_WEBDAV_PASSWORD, pwd);
@@ -419,29 +418,47 @@ public class AListFragment extends Fragment {
     }
 
     public void showQrCode(View view) {
-        String url = mainActivity.serverAddress;
         if (alistServer == null || !alistServer.hasRunning()) {
             showToast("请先启动服务");
             return;
         }
-        try {
-            BitMatrix bitMatrix = QrCodeUtil.encode(url, 300, 300);
-            android.graphics.Bitmap qrBitmap = QrCodeUtil.toImage(bitMatrix, 4);
-            ImageView qrImageView = new ImageView(requireContext());
-            qrImageView.setImageBitmap(qrBitmap);
-            AlertDialog.Builder builder = new AlertDialog.Builder(requireContext())
-                .setTitle("AList 服务地址")
-                .setMessage(url + "\n（请使用其他设备扫描此二维码）")
-                .setView(qrImageView)
-                .setPositiveButton("复制地址", (dialog, which) -> {
-                    clipBoardHelper.copyText(url);
-                    showToast("已复制");
-                })
-                .setNegativeButton("关闭", null);
-            builder.show();
-        } catch (Exception e) {
-            showToast("生成二维码失败");
+        String url = mainActivity.serverAddress;
+        ImageView imageView = new ImageView(requireContext());
+        imageView.setImageBitmap(bitMatrixToBitmap(QrCodeUtil.encode(url, 500, 500)));
+        imageView.setAdjustViewBounds(true);
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+        imageView.setOnClickListener(v -> openExternalUrl(url));
+
+        FrameLayout layout = new FrameLayout(requireContext());
+        int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+        layout.setPadding(padding, padding, padding, padding);
+        layout.addView(imageView, new FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+
+        AlertDialog.Builder dialog = new AlertDialog.Builder(requireContext());
+        AlertDialog alertDialog = dialog.create();
+        alertDialog.setTitle("远程访问");
+        alertDialog.setView(layout);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "复制地址", (d, w) -> {
+            clipBoardHelper.copyText(url);
+            showToast("已复制");
+        });
+        alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "关闭", (d, w) -> {});
+        alertDialog.show();
+    }
+
+    private Bitmap bitMatrixToBitmap(BitMatrix bitMatrix) {
+        int width = bitMatrix.getWidth();
+        int height = bitMatrix.getHeight();
+        int[] pixels = new int[width * height];
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                pixels[y * width + x] = bitMatrix.get(x, y) ? 0xFF000000 : 0xFFFFFFFF;
+            }
         }
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return bitmap;
     }
 
     public void copyAddressToClipboard() {
