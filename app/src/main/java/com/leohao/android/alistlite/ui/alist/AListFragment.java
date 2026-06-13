@@ -378,7 +378,9 @@ public class AListFragment extends Fragment {
 
         final EditText usernameInput = new EditText(requireContext());
         usernameInput.setHint("管理员账号（留空则不变）");
-        usernameInput.setText(alistServer.getAdminUser());
+        try {
+            usernameInput.setText(alistServer.getAdminUser());
+        } catch (Exception ignored) {}
         layout.addView(usernameInput);
 
         final EditText pwdInput = new EditText(requireContext());
@@ -386,7 +388,6 @@ public class AListFragment extends Fragment {
         pwdInput.setTransformationMethod(PasswordTransformationMethod.getInstance());
         layout.addView(pwdInput);
 
-        builder.setView(layout);
         builder.setView(layout);
         builder.setPositiveButton("确定", (dialog, which) -> {
             String pwd = pwdInput.getText().toString().trim();
